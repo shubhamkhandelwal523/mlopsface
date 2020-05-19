@@ -19,6 +19,26 @@ for layer in vgg16.layers:
 # Let's print our layers 
 for (i,layer) in enumerate(vgg16.layers):
     print(str(i) + " "+ layer.__class__.__name__, layer.trainable)
+Using TensorFlow backend.
+0 InputLayer False
+1 Conv2D False
+2 Conv2D False
+3 MaxPooling2D False
+4 Conv2D False
+5 Conv2D False
+6 MaxPooling2D False
+7 Conv2D False
+8 Conv2D False
+9 Conv2D False
+10 MaxPooling2D False
+11 Conv2D False
+12 Conv2D False
+13 Conv2D False
+14 MaxPooling2D False
+15 Conv2D False
+16 Conv2D False
+17 Conv2D False
+18 MaxPooling2D False
 Let's make a function that returns our FC Head
 def lw(bottom_model, num_classes):
     """creates the top or head of the model that will be 
@@ -47,12 +67,69 @@ FC_Head = lw(vgg16, num_classes)
 model = Model(inputs = vgg16.input, outputs = FC_Head)
 ​
 print(model.summary())
+Model: "model_1"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+input_1 (InputLayer)         (None, 224, 224, 3)       0         
+_________________________________________________________________
+block1_conv1 (Conv2D)        (None, 224, 224, 64)      1792      
+_________________________________________________________________
+block1_conv2 (Conv2D)        (None, 224, 224, 64)      36928     
+_________________________________________________________________
+block1_pool (MaxPooling2D)   (None, 112, 112, 64)      0         
+_________________________________________________________________
+block2_conv1 (Conv2D)        (None, 112, 112, 128)     73856     
+_________________________________________________________________
+block2_conv2 (Conv2D)        (None, 112, 112, 128)     147584    
+_________________________________________________________________
+block2_pool (MaxPooling2D)   (None, 56, 56, 128)       0         
+_________________________________________________________________
+block3_conv1 (Conv2D)        (None, 56, 56, 256)       295168    
+_________________________________________________________________
+block3_conv2 (Conv2D)        (None, 56, 56, 256)       590080    
+_________________________________________________________________
+block3_conv3 (Conv2D)        (None, 56, 56, 256)       590080    
+_________________________________________________________________
+block3_pool (MaxPooling2D)   (None, 28, 28, 256)       0         
+_________________________________________________________________
+block4_conv1 (Conv2D)        (None, 28, 28, 512)       1180160   
+_________________________________________________________________
+block4_conv2 (Conv2D)        (None, 28, 28, 512)       2359808   
+_________________________________________________________________
+block4_conv3 (Conv2D)        (None, 28, 28, 512)       2359808   
+_________________________________________________________________
+block4_pool (MaxPooling2D)   (None, 14, 14, 512)       0         
+_________________________________________________________________
+block5_conv1 (Conv2D)        (None, 14, 14, 512)       2359808   
+_________________________________________________________________
+block5_conv2 (Conv2D)        (None, 14, 14, 512)       2359808   
+_________________________________________________________________
+block5_conv3 (Conv2D)        (None, 14, 14, 512)       2359808   
+_________________________________________________________________
+block5_pool (MaxPooling2D)   (None, 7, 7, 512)         0         
+_________________________________________________________________
+global_average_pooling2d_1 ( (None, 512)               0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 1024)              525312    
+_________________________________________________________________
+dense_2 (Dense)              (None, 1024)              1049600   
+_________________________________________________________________
+dense_3 (Dense)              (None, 512)               524800    
+_________________________________________________________________
+dense_4 (Dense)              (None, 10)                5130      
+=================================================================
+Total params: 16,819,530
+Trainable params: 2,104,842
+Non-trainable params: 14,714,688
+_________________________________________________________________
+None
 Loading our faces Dataset
 from keras.preprocessing.image import ImageDataGenerator
 ​
 #path you can give according to you
-train_data_dir = 'mlopsface/faces/train/'
-validation_data_dir = 'mlopsface/faces/validation/'
+train_data_dir = 'faces/training/'
+validation_data_dir = 'faces/testing/'
 ​
 # Let's use some data augmentaiton 
 train_datagen = ImageDataGenerator(
@@ -79,10 +156,10 @@ validation_generator = validation_datagen.flow_from_directory(
         target_size=(img_rows, img_cols),
         batch_size=batch_size,
         class_mode='categorical')
+Found 0 images belonging to 0 classes.
+Found 0 images belonging to 0 classes.
 Training out Model
 Note we're using checkpointing and early stopping
-
-
 from keras.optimizers import RMSprop
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 ​
